@@ -1,170 +1,158 @@
+// main.cpp
 // ERIC AKIO UCHIYAMADA ------ TIA: 42107865 ----- TURMA: 03D
 // PEDRO L M B VOLPE ----- TIA: 42131936 ----- TURMA: 03D
 
 #include <iostream>
 #include "LinkedList.h"
 
-//----------------------------------------------------------------------------
-//Criar lista encadeada vazia
-LinkedList *Create(){ 
-  LinkedList *newList = new LinkedList;
-  newList->count = 0;
-  newList->head = newList->tail = nullptr;
-  return newList;
-}
-//----------------------------------------------------------------------------
-//Liberar memória alocada para a lista
-void Destroy(LinkedList *&list){
-  
-  Clear(list);
-  delete list;
-  list = nullptr;
-}
-//----------------------------------------------------------------------------
-//Inserir nó com elemento no início da lista
-void Insert(LinkedList *list, int elem){
-  Node *node = new Node;
-  node->data = elem;
-  node->next = list->head;
-  if (IsEmpty(list)){
-    list->tail = node;
-  }
-  list->head = node;
-  list->count++;
-}
-//----------------------------------------------------------------------------
-//Inserir nó com elemento no final da lista
-void Append(LinkedList *list, int elem){
-  Node *node = new Node;
-  node->data = elem;
-  node->next = nullptr;
-  if (IsEmpty(list)){
-    list->head = node;
-  }
-  else{
-    list->tail->next = node;
-  }
-  list->tail = node;
-  list->count++;
-}
-//----------------------------------------------------------------------------
-//Remover o nó do início da lista
-Node *RemoveHead(LinkedList *list){
-  if (IsEmpty(list)){
-    return nullptr;
-  }
-  Node *toRemove = list->head;
-  if (list->head == list->tail){
-    list->head = list->tail = nullptr;
-  }
-  else{
-    list->head = list->head->next;
-  }
-  list->count--;
-  toRemove->next = nullptr;
-  
-  return toRemove;
-}
-//----------------------------------------------------------------------------
-//Remover o nó do final da lista
-Node *RemoveTail(LinkedList *list){
-  if (IsEmpty(list)){
-    return nullptr;
-  }
-  if (list->head == list->tail){
-    return RemoveHead(list);
-  }
-  Node *toRemove = list->head;
-  Node *previous = nullptr;
-  while(toRemove != list->tail){
-    previous = toRemove;
-    toRemove = toRemove->next;
-  }
-  previous->next = nullptr;
-  list->tail = previous;
-  list->count--;
-  toRemove->next = nullptr;
-  return toRemove;
-}
-//----------------------------------------------------------------------------
-//Remover nó com elemento específico da lista
-Node *RemoveNode(LinkedList *list, int value){
-  if (IsEmpty(list)){
-    return nullptr;
-  }
-  Node *toRemove = list->head;
-  Node *previous = nullptr;
-  while ((toRemove != nullptr) && (toRemove->data != value)){
-    previous = toRemove;
-    toRemove = toRemove->next;
-  }
-  if (toRemove == nullptr)
-    return nullptr;
-  else if(toRemove == list->head)
-    return RemoveHead(list);
-  else if(toRemove == list->tail)
-    return RemoveTail(list);
-  else{
-    previous->next = toRemove->next;
-    list->count--;
-    toRemove->next = nullptr;
-    return toRemove;
-  }
-}
-//----------------------------------------------------------------------------
-//Retorna uma referência do nó com o elemento específico da lista
-Node *GetNode(const LinkedList *list, int value){
-  if (IsEmpty(list)){
-    return nullptr;
-  }
+#define SAFE_DELETE(ptr) { if(ptr) { delete ptr; ptr = nullptr; }}
+#define SAFE_DELETE_ARRAY(arr) { if (arr) { delete [] arr; arr = nullptr; }}
+
+using namespace std;
+void PrintListInfo(const LinkedList* list)
+{
+ if (IsEmpty(list))
+ {
+ cout << "Lista vazia!\n";
+ }
+ else
+ {
+ // Percorrer todos os nós da lista e imprimir os valores de cada nó
+ // (veja saída de exemplo no enunciado).
   Node *node = list->head;
-  while (node != nullptr){
-    if (node->data == value)
-      return node;
+  cout << "Lista com " << Count(list) <<  " elementos: "; 
+  while (node != nullptr) {
+    cout << node->data << " ";
     node = node->next;
   }
-  return nullptr;
+   cout << "\n\n";
+ }
 }
-//----------------------------------------------------------------------------
-//Retorna uma referência do primeiro nó da lista
-Node *GetHead(const LinkedList *list){
-  if (IsEmpty(list)){
-    return nullptr;
-  }
-  return list->head;
+
+int main()
+{
+ cout << "*** Lista Ligada/Encadeada (Linked List) ***\n\n";
+ LinkedList* list = Create();
+ PrintListInfo(list);
+ Insert(list, 1);
+ Insert(list, 2);
+ Insert(list, 3);
+ Append(list, 4);
+ Append(list, 5);
+ Append(list, 6);
+ PrintListInfo(list);
+ Clear(list);
+ PrintListInfo(list);
+ Insert(list, 77);
+ Append(list, 88);
+ Insert(list, 99);
+ Append(list, 3);
+ Insert(list, 2);
+ Append(list, 1);
+ Insert(list, 0);
+ PrintListInfo(list);
+  
+ Node* temp = RemoveNode(list, 3);
+ cout << "Nó removido: " << temp->data << '\n';
+  
+ // Liberar memória alocada para o nó que foi removido.
+ SAFE_DELETE(temp);
+ 
+ PrintListInfo(list);
+ temp = RemoveHead(list);
+ cout << "Nó removido: " << temp->data << '\n';
+  
+ // Liberar memória alocada para o nó que foi removido.
+ SAFE_DELETE(temp);
+  
+ PrintListInfo(list);
+ temp = RemoveTail(list);
+ cout << "Nó removido: " << temp->data << '\n';
+  
+ // Liberar memória alocada para o nó que foi removido.
+ SAFE_DELETE(temp);
+  
+ PrintListInfo(list);
+
+ // Imprimir o primeiro elemento da lista
+  
+ cout << "Primeiro nó da lista: " << GetHead(list)->data << '\n' << endl;   
+  
+ // Imprimir o último elemento da lista
+  
+ cout << "Ultimo nó da lista: " << GetTail(list)->data << '\n' << endl;
+// Tentar encontrar o nó de valor 3 na lista
+  
+ if (GetNode(list, 3)!= nullptr){
+   cout << "O endereço de memória do nó de valor " << 3 << " na lista é: " << GetNode(list,3) << '\n' << endl;
+ }
+ else{
+   cout << "Valor dado não se encontra na lista\n" << endl;
 }
-//----------------------------------------------------------------------------
-//Retorna uma referência do último nó da lista
-Node *GetTail(const LinkedList *list){ 
-  if (IsEmpty(list)){
-    return nullptr;
-  }
-  return list->tail;
+ 
+Destroy(list);// Liberar memória alocada para a lista.
+if(list == nullptr)
+  cout << "Lista foi desalocada\n";
+else  cout << "Lista não foi desalocada\n";
+cout << "Fim.\n";
 }
-//----------------------------------------------------------------------------
-//Contar o tamanho da lista
-int Count(const LinkedList *list){
-  return list->count;
-}
-//----------------------------------------------------------------------------
-//Verificar se a lista está vazia
-bool IsEmpty(const LinkedList *list){
-  if (list->count == 0)
-    return true;
-  return false;
-}
-//----------------------------------------------------------------------------
-//Desalocar cada nó da lista
-void Clear(LinkedList *list){
-  Node *node = list->head;
-  Node *next = nullptr;
-  while(node != nullptr){
-    next = node->next;
-    delete node;
-    node = next;
-  }
-  node = next = nullptr;
-  list->head = list->tail = nullptr;
-  list->count = 0;
-}
-//----------------------------------------------------------------------------
+
+
+/* 
+REFERENCIAS: 
+- Aulas de ponteiros e linkedList dadas pelo professor Kishimoto, Mackenzie
+
+- Avoid Memory Leak 
+https://www.geeksforgeeks.org/memory-leak-in-c-and-how-to-avoid-it/#:~:text=Memory%20leakage%20occurs%20in%20C%2B%2B,by%20using%20wrong%20delete%20operator.
+
+---------------------------------------------------------------------------------------------------
+
+AUTO AVALIAÇÃO:
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+
+-PEDRO L M B VOLPE- 
+
+Item avaliado                                                               Pontuação 
+----------------------------------------------------------------------------------------------------
+Implementação das funções:
+
+Create(), Destroy(), Clear(), Insert(), Append(), RemoveHead(),         8,0 (TODAS AS FUNÇÕES FORAM 
+RemoveTail(), RemoveNode().                                                 IMPLEMENTADAS)                                                                                                                         
+----------------------------------------------------------------------------------------------------                                                                         
+Implementação das funções:
+GetHead(), GetTail(), GetNode(), Count(), IsEmpty().                     1,25 (Todas as funções foram)
+                                                                              implementadas no código)
+----------------------------------------------------------------------------------------------------
+Implementação da função main().                                             0,5 (Implementada)
+----------------------------------------------------------------------------------------------------
+Autoavaliação (individual).                                                 0,25 (Feita)
+----------------------------------------------------------------------------------------------------
+
+                                            Total: 10 
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+
+-ERIC AKIO UCHIYAMADA-
+
+Item avaliado                                                                Pontuação 
+----------------------------------------------------------------------------------------------------
+Implementação das funções:
+
+Create(), Destroy(), Clear(), Insert(), Append(), RemoveHead(),                 8,0
+RemoveTail(), RemoveNode().                                                 
+                                                                           
+-----------------------------------------------------------------------------------------------------
+Implementação das funções:
+GetHead(), GetTail(), GetNode(), Count(), IsEmpty().                            1,25
+-----------------------------------------------------------------------------------------------------
+Implementação da função main().                                                 0,5
+-----------------------------------------------------------------------------------------------------
+Autoavaliação (individual).                                                     0,25
+-----------------------------------------------------------------------------------------------------
+                                                                              Total: 10
+-----------------------------------------------------------------------------------------------------
+
+*/
