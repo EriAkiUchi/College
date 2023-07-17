@@ -4,19 +4,28 @@ Nome: Oliver Kieran Galvão McCormack		    TIA: 42122058
 Nome: Pedro Loureiro Morone Branco Volpe		TIA: 42131936
 Nome: Renan Luiz Rodrigues Tagliaferro		  TIA: 42105846
 */
+//pequeno projeto de manipulação de threads com semáforos
 #include <stdio.h> 
 #include <stdlib.h> 
-#include <pthread.h>
+#include <pthread.h> 
+#include <semaphore.h> 
 #include <unistd.h>
-//pequeno projeto de manipulação de threads
+
+sem_t sem_ContaA;
+sem_t sem_ContaB;
+
 void *transferirParaA(void *arg)
 {
   int valor = *((int *)arg);
-  int saldoA,saldoB;
-  //abrir ler e printar A
+  int saldoA,saldoB,sitA,sitB;//sitX = 0 significa conta X travada
+  //abrir, travar ler e printar A
+  //sem_getvalue(&sem_ContaA, &sitA);
+  sem_wait(&sem_ContaA);
   FILE* A = fopen("saldoA.txt", "r+");
   fscanf(A, "%d ", &saldoA);
-  //abrir B e ler o saldo
+  //abrir B, travar e ler o saldo
+  sleep(1);
+  sem_wait(&sem_ContaB);
   FILE* B = fopen("saldoB.txt", "r+");
   fscanf(B,"%d " ,&saldoB);
   // subtrair x do saldoB e passar ao A
@@ -33,7 +42,10 @@ void *transferirParaA(void *arg)
   fscanf(B,"%d ", &saldoB);
   printf("\nSaldo após tranferencia em A(A): %d\n",saldoA);
   printf("\nSaldo após tranferencia em B(A): %d\n",saldoB);
-  // fechar os arquivos
+  
+  // fechar e liberar os arquivos
+  sem_post(&sem_ContaA);
+  sem_post(&sem_ContaB);
   fclose(A);
   fclose(B);
   return NULL;
@@ -43,10 +55,12 @@ void *transferirParaB(void *arg)
 {
   int valor = *((int *)arg);
   int saldoA,saldoB;
-  //abrir ler e printar A
+  //abrir ler e printar B
+  sem_wait(&sem_ContaB);
   FILE* B = fopen("saldoB.txt", "r+");
   fscanf(B, "%d ", &saldoB);
   //abrir B e ler o saldo
+  sem_wait(&sem_ContaA);
   FILE* A = fopen("saldoA.txt", "r+");
   fscanf(A,"%d " ,&saldoA);
   // subtrair x do saldoB e passar ao A
@@ -64,6 +78,8 @@ void *transferirParaB(void *arg)
   printf("\nSaldo após tranferencia em B(B): %d\n",saldoB);
   printf("\nSaldo após tranferencia em A(B): %d\n",saldoA);
   // fechar os arquivos
+  sem_post(&sem_ContaB);
+  sem_post(&sem_ContaA);
   fclose(A);
   fclose(B);
   return NULL;
@@ -82,17 +98,21 @@ int main(void)
  
   fclose(AI);
   fclose(BI);
-  
+
   printf("\nValor que A transfere para B: ");
   scanf("%d",&valorA);
   printf("\nValor que B transfere para A: ");
   scanf("%d",&valorB);
   
+  sem_init(&sem_ContaA, 0, 1); 
+  sem_init(&sem_ContaB, 0, 1); 
+  
   pthread_create(&TA, NULL, transferirParaA, &valorB);
   pthread_create(&TB, NULL, transferirParaB, &valorA);
 
-  sleep(3);
-  
+  pthread_join(TA, NULL);
+  pthread_join(TB, NULL);
+
   int saldoA, saldoB;
   FILE* A = fopen("saldoA.txt", "r+");
   fscanf(A, "%d ", &saldoA);
