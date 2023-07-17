@@ -1,5 +1,5 @@
-Trabalho de análise de Banco de Dados da Prefeitura de São Paulo.
-
+Projeto de análise de Banco de Dados da Prefeitura de São Paulo.
+Feito junto com outros alunos.
 Arquivo CSV foi tratado par acomodar às análises de Dados.
 
 Análises feitas: 
