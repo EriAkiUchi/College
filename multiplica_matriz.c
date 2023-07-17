@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+//exercício de multiplicação de matrizes
 int **alocar_matriz(int linhas,int colunas)
 {
 	int **a,i,j,k;
