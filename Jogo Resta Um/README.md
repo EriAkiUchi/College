@@ -1,4 +1,5 @@
-Projeto de criar um algoritmo que consiga resolver o jogo Resta Um.
-- Feito em dupla com outro aluno.
-- Uso de Backtracking.
-- Os arquivos Pilha são para armazenar o caminho correto que o algoritmo encontrou. Depois, cada passo é impresso em um arquivo txt.
+Project to create an algorithm capable of solving the game Peg Solitaire (Resta Um).  
+  
+Developed in pairs with another student.  
+Usage of Backtracking.  
+The Stack files are used to store the correct path found by the algorithm. Then, each step is printed in a txt file.  
