@@ -12,4 +12,5 @@ Top 5 most popular series;
 Compare critic score (imdb) with audience score (tmdb);  
 Number of movies in each category and their respective percentages compared to the total;  
 Percentage of movies and series released in a certain year;  
+  
 It is also possible to manipulate the CSV file: read and save  
